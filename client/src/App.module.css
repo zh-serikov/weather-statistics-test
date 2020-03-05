@@ -1,0 +1,48 @@
+/* Global variables */
+:root {
+  --shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 
+                   0 1px 5px 0 rgba(0, 0, 0, 0.12), 
+                   0 3px 1px -2px rgba(0, 0, 0, 0.2);
+}
+
+.layout {
+  padding: 15px;
+  display: flex;
+}
+
+.buttons-group {
+  display: flex;
+  flex-direction: column;
+  width: 15rem;
+  height: max-content;
+  min-width: 180px;
+  max-width: 35%;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: var(--shadow);
+}
+
+.input-select_group {
+  display: flex;
+  padding: 1px;
+  margin-bottom: 10px;
+}
+
+.input-select {
+  width: 200px;
+  margin-right: 10px;
+}
+
+.container {
+  overflow: auto;
+  margin-left: 20px;
+}
+
+.content {
+  display: flex;
+  flex-grow: 1;
+  border: 1px solid #d7d7d7;
+  border-radius: 5px;
+  padding: 10px;
+  overflow: auto;
+}

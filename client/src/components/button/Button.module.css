@@ -1,0 +1,21 @@
+.wrapper {
+  display: flex;
+  cursor: pointer;
+  background-color: orange;
+  margin: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 18px;
+  color: #666;
+  box-shadow: var(--shadow);
+}
+
+.wrapper:active {
+  box-shadow: none;
+}
+
+.wrapper.active {
+  background-color: #2196f3;
+  color: #fff; 
+  box-shadow: none;
+}
