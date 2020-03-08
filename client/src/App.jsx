@@ -8,7 +8,6 @@ import Graph from 'components/graph'
 import { TYPE } from 'helpers/constants'
 import Errors from 'helpers/errors'
 
-
 function generateYears(start, end) {
   const years = Array(end - start + 1)
                 .fill()
@@ -21,7 +20,7 @@ function filterData(state, from, to) {
   const filtered = state.filter((item) => {
     const n = Number(item.t.substring(0, 4))
 
-    if (n !== NaN) return from <= n && n <= to
+    if (!isNaN(n)) return from <= n && n <= to
   })
 
   return [...filtered]
@@ -35,39 +34,44 @@ function App() {
   const [date, setDate] = useState({ start: 1881, end: 2006 })
 
   const [data, setData] = useState([])
+  
+  const [abort, setAbort] = useState()
 
   useEffect(() => {
-    // fetch initial data: temperature
-    fetch('/api/get_temperature_data')
-      .then(res => res.json())
-      .then(json => setData(json))
-      .catch((err) => Errors.handleNetworkError(err))
-  }, [])
-
-  useEffect(() => {
-    fetchFilteredData(mode, date.start, date.end)
+    (async () =>  fetchFilteredData(mode, date.start, date.end))()
   }, [mode])
 
   useEffect(() => {
     setStartYears(generateYears(1881, date.end))
     setEndYears(generateYears(date.start, 2006))
-
-    fetchFilteredData(mode, date.start, date.end)
-
+    if (abort && abort.abort) {
+      abort.abort()
+    }
+    (async () => {
+      const abortController = await fetchFilteredData(mode, date.start, date.end)
+      setAbort(abortController)
+    })()
+    
   }, [date])
 
-  const fetchFilteredData = (mode, start, end) => {
+  const fetchFilteredData = async (mode, start, end) => {
+    const controller = new AbortController()
+    let url;
     if (mode === TYPE.TEMPERATURE) {
-      fetch('/api/get_temperature_data')
-        .then(res => res.json())
-        .then(json => setData(filterData(json, start, end)))
-        .catch((err) => Errors.handleNetworkError(err))
+      url = "/api/get_precipitation_data"
     }
     else if (mode === TYPE.PRECIPITATION) {
-      fetch('/api/get_precipitation_data')
-        .then(res => res.json())
-        .then(json => setData(filterData(json, start, end)))
-        .catch((err) => Errors.handleNetworkError(err))
+      url = "/api/get_temperature_data"
+    }
+
+    try {
+      const res = await fetch(url, { signal: controller.signal })
+      const json = await res.json()
+      setData(filterData(json, start, end))
+      return controller
+    } catch (err) {
+      Errors.handleNetworkError(err)
+      return undefined
     }
   }
   
