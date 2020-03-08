@@ -38,7 +38,13 @@ function App() {
   const [abort, setAbort] = useState()
 
   useEffect(() => {
-    (async () =>  fetchFilteredData(mode, date.start, date.end))()
+    if (abort && abort.abort) {
+      abort.abort()
+    }
+    (async () => {
+      const abortController = fetchFilteredData(mode, date.start, date.end)
+      setAbort(abortController)
+    })()
   }, [mode])
 
   useEffect(() => {
